@@ -1,0 +1,44 @@
+services:
+  app:
+    image: fastapi_analitics:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8002
+      - DATABASE_URL=postgresql+psycopg2://valid_user:pwd@db_services:5432/fastapi_analitics_db
+    env_file:
+      - .env
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./src:/code/src
+    # command: gunicorn -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8002 src.main:app --workers 4 --timeout 120 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    develop:
+      watch:
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: requirements.txt
+        - action: rebuild
+          path: compose.yaml
+
+# Database Service
+# Using TimescaleDB (PostgreSQL extension for time-series data)
+# Documentation: https://docs.timescale.com/timescaledb/latest/how-to-guides/install-timescaledb/docker/
+# postgrsql+psycopg2://<valid_user>:<pwd>@<host_value>:<5432>/<fastapi_analitics_db> 
+  db_services:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      - POSTGRES_USER=valid_user
+      - POSTGRES_PASSWORD=pwd
+      - POSTGRES_DB=fastapi_analitics_db
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - fastapi_analitics_db:/var/lib/postgresql/data
+volumes:
+  fastapi_analitics_db:
