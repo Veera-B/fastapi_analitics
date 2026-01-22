@@ -1,14 +1,14 @@
 
 from fastapi import APIRouter
 from .Schemas import EventSchema, EventsListSchema
-import os
+from api.db.config import DATABASE_URL
 
 router = APIRouter()
 # api/events/routing.py
 
 @router.get("/events")
 async def get_events():
-    print(os.environ.get("DATABASE_URL"))
+    print("DATABASE_URL", DATABASE_URL)
     return {"message": [1,2,3]}
 
 @router.get("/events/{event_id}")

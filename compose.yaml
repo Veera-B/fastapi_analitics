@@ -4,11 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - PORT=8002
-      - DATABASE_URL=postgresql+psycopg2://valid_user:pwd@db_services:5432/fastapi_analitics_db
+    # environment:
+    #   - PORT=8002
+    #   - DATABASE_URL=postgresql+psycopg2://valid_user:pwd@db_services:5432/fastapi_analitics_db
     env_file:
-      - .env
+      - .env.compose
     ports:
       - "8002:8002"
     volumes:

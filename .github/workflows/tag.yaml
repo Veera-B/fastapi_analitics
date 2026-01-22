@@ -1,0 +1,26 @@
+name: Auto Tag Generator
+on:
+  push:
+    branches:
+      - master
+jabs:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Read VERSION
+      id: read_version
+      run: |
+        VERSION=$(cat VERSION)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Create Tag if not exists
+      run: |
+        TAG="v${VERSION}"
+        if git rev-parse "$TAG" >/dev/null 2>&1; then
+          echo "Tag $TAG already exists. Skipping."
+          exit 0
+        fi
+        git tag "$TAG"
+        git push origin "$TAG"
